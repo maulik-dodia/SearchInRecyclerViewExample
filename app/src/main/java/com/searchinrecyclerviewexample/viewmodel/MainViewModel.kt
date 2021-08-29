@@ -11,7 +11,8 @@ import kotlinx.coroutines.launch
 class MainViewModel : ViewModel() {
 
     var nextPageNo = 0
-    val resultsLiveData: MutableLiveData<BaseRes<String>> = MutableLiveData()
+    var searchedTerm: String? = null
+    var resultsLiveData: MutableLiveData<BaseRes<String>> = MutableLiveData()
 
     fun getResultsFromAPI() {
         nextPageNo++
@@ -19,7 +20,11 @@ class MainViewModel : ViewModel() {
             resultsLiveData.postValue(BaseRes.Loading())
             try {
                 val response =
-                    RetrofitInstance.api.getData(apiKey = API_KEY, nextPageNo = nextPageNo)
+                    RetrofitInstance.api.getData(
+                        apiKey = API_KEY,
+                        searchedTerm = searchedTerm,
+                        nextPageNo = nextPageNo
+                    )
                 if (response.isSuccessful) {
                     response.body()?.let { searchImageResponse ->
                         resultsLiveData.postValue(BaseRes.Success(searchImageResponse))

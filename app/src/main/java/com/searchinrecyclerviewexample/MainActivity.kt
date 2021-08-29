@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.searchinrecyclerviewexample.adapter.SearchImageAdapter
 import com.searchinrecyclerviewexample.databinding.ActivityMainBinding
@@ -30,17 +31,41 @@ class MainActivity : AppCompatActivity() {
         viewModel.getResultsFromAPI()
 
         val searchImageAdapter = SearchImageAdapter()
-        binding.rvImages.apply {
-            adapter = searchImageAdapter
-        }
-        binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    viewModel.getResultsFromAPI()
+        binding.apply {
+            rvImages.apply {
+                adapter = searchImageAdapter
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+                        if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            viewModel.getResultsFromAPI()
+                        }
+                    }
+                })
+            }
+            edtSearch.doAfterTextChanged { editable ->
+                editable?.let {
+                    viewModel.apply {
+                        searchedTerm = it.toString()
+                        searchedTerm?.let { searchedStr ->
+                            if (searchedStr.isEmpty()) {
+                                nextPageNo = 0
+                                searchedTerm = null
+                                searchedImageList.clear()
+                                getResultsFromAPI()
+                            }
+                        }
+                    }
                 }
             }
-        })
+            btnSearch.setOnClickListener {
+                viewModel.apply {
+                    nextPageNo = 0
+                    searchedImageList.clear()
+                    getResultsFromAPI()
+                }
+            }
+        }
 
         viewModel.resultsLiveData.observe(this) { response ->
             when (response) {
