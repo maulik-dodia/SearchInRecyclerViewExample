@@ -10,19 +10,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.searchinrecyclerviewexample.R
-import com.searchinrecyclerviewexample.model.SearchImageRes
+import com.searchinrecyclerviewexample.model.Hit
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
 class SearchImageAdapter :
-    ListAdapter<SearchImageRes, SearchImageAdapter.ViewHolder>(TaskDiffCallBack()) {
+    ListAdapter<Hit, SearchImageAdapter.ViewHolder>(TaskDiffCallBack()) {
 
-    class TaskDiffCallBack : DiffUtil.ItemCallback<SearchImageRes>() {
-        override fun areItemsTheSame(oldItem: SearchImageRes, newItem: SearchImageRes): Boolean {
+    class TaskDiffCallBack : DiffUtil.ItemCallback<Hit>() {
+        override fun areItemsTheSame(oldItem: Hit, newItem: Hit): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: SearchImageRes, newItem: SearchImageRes): Boolean {
+        override fun areContentsTheSame(oldItem: Hit, newItem: Hit): Boolean {
             return oldItem == newItem
         }
     }
@@ -33,9 +33,7 @@ class SearchImageAdapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val singleSearchImageObj = getItem(position)
-
         singleSearchImageObj?.let { searchImage ->
             holder.bind(searchImage)
         }
@@ -45,7 +43,7 @@ class SearchImageAdapter :
         val pbPreviewPic: ProgressBar = itemView.findViewById(R.id.pb_preview_pic)
         private val ivPreviewPic: AppCompatImageView = itemView.findViewById(R.id.iv_preview_pic)
         private val tvViews: AppCompatTextView = itemView.findViewById(R.id.tv_views)
-        fun bind(searchImage: SearchImageRes) {
+        fun bind(searchImage: Hit) {
             Picasso.get()
                 .load(searchImage.previewURL)
                 .into(ivPreviewPic, object : Callback {
