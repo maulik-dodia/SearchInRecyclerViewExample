@@ -2,6 +2,7 @@ package com.searchinrecyclerviewexample
 
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -43,30 +44,39 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
             }
-            edtSearch.doAfterTextChanged { editable ->
-                editable?.let {
-                    viewModel.apply {
-                        searchedTerm = it.toString()
-                        searchedTerm?.let { searchedStr ->
-                            if (searchedStr.isEmpty()) {
-                                nextPageNo = 0
-                                searchedTerm = null
-                                searchedImageList.clear()
-                                getResultsFromAPI()
+            edtSearch.apply {
+                doAfterTextChanged { editable ->
+                    editable?.let {
+                        viewModel.apply {
+                            searchedTerm = it.toString()
+                            searchedTerm?.let { searchedStr ->
+                                if (searchedStr.isEmpty()) {
+                                    setAPIParamForPageOne()
+                                    searchedTerm = null
+                                    getResultsFromAPI()
+                                }
                             }
                         }
                     }
                 }
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        if (!viewModel.searchedTerm.isNullOrEmpty()) {
+                            setAPIParamForPageOne()
+                            viewModel.getResultsFromAPI()
+                        }
+                        return@setOnEditorActionListener true
+                    }
+                    return@setOnEditorActionListener false
+                }
             }
             btnSearch.setOnClickListener {
-                viewModel.apply {
-                    nextPageNo = 0
-                    searchedImageList.clear()
-                    getResultsFromAPI()
+                if (!viewModel.searchedTerm.isNullOrEmpty()) {
+                    setAPIParamForPageOne()
+                    viewModel.getResultsFromAPI()
                 }
             }
         }
-
         viewModel.resultsLiveData.observe(this) { response ->
             when (response) {
                 is BaseRes.Loading -> {
@@ -93,6 +103,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun setAPIParamForPageOne() {
+        viewModel.nextPageNo = 0
+        searchedImageList.clear()
     }
 
     private fun showProgressBar() {
