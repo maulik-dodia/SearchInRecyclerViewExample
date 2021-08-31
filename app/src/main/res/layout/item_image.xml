@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/dp_10"
@@ -14,7 +15,7 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_preview_pic"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="@dimen/dp_250"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -31,23 +32,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!--<androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_views"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_unlike" />-->
-
-        <!--<View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/cardview_dark_background"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/tv_downloads"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_views" />-->
-
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_views"
             android:layout_width="0dp"
@@ -55,74 +39,10 @@
             android:background="@color/cardview_dark_background"
             android:gravity="center"
             android:padding="5dp"
-            android:text="125K Views"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!--<androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_separator_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="|"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_views" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_downloads"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="10K Downloads"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_separator_1" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_separator_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="|"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_downloads" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_likes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="89K Likes"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_separator_2" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_separator_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="|"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_likes" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_comments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="25K Comments"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_separator_3" />-->
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="125K Views" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -1,8 +1,8 @@
 package com.searchinrecyclerviewexample.network
 
+import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.searchinrecyclerviewexample.utils.BASE_URL
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -12,11 +12,8 @@ class RetrofitInstance {
 
         private val retrofit by lazy {
 
-            val logging = HttpLoggingInterceptor()
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY)
-
             val client = OkHttpClient.Builder()
-                .addInterceptor(logging)
+                .addInterceptor(OkHttpProfilerInterceptor())
                 .build()
 
             Retrofit.Builder()

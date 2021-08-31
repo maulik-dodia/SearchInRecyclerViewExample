@@ -2,7 +2,6 @@ package com.searchinrecyclerviewexample.network
 
 import com.searchinrecyclerviewexample.model.SearchImageRes
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Query
 

@@ -1,19 +1,24 @@
 package com.searchinrecyclerviewexample
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import com.searchinrecyclerviewexample.adapter.SearchImageAdapter
 import com.searchinrecyclerviewexample.databinding.ActivityMainBinding
 import com.searchinrecyclerviewexample.model.BaseRes
 import com.searchinrecyclerviewexample.model.Hit
-import com.searchinrecyclerviewexample.model.SearchImageRes
+import com.searchinrecyclerviewexample.utils.SEVEN_HUNDRED
 import com.searchinrecyclerviewexample.viewmodel.MainViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -21,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
-    private val searchedImageList = ArrayList<Hit>()
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,38 +48,18 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
             }
-            edtSearch.apply {
-                doAfterTextChanged { editable ->
-                    editable?.let {
+
+            edtSearch.addTextChangedListener(
+                DebouncingQueryTextListener(lifecycle) { newText ->
+                    newText?.let {
                         viewModel.apply {
-                            searchedTerm = it.toString()
-                            searchedTerm?.let { searchedStr ->
-                                if (searchedStr.isEmpty()) {
-                                    setAPIParamForPageOne()
-                                    searchedTerm = null
-                                    getResultsFromAPI()
-                                }
-                            }
+                            nextPageNo = 0
+                            searchedTerm = it
+                            getResultsFromAPI()
                         }
                     }
                 }
-                setOnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        if (!viewModel.searchedTerm.isNullOrEmpty()) {
-                            setAPIParamForPageOne()
-                            viewModel.getResultsFromAPI()
-                        }
-                        return@setOnEditorActionListener true
-                    }
-                    return@setOnEditorActionListener false
-                }
-            }
-            btnSearch.setOnClickListener {
-                if (!viewModel.searchedTerm.isNullOrEmpty()) {
-                    setAPIParamForPageOne()
-                    viewModel.getResultsFromAPI()
-                }
-            }
+            )
         }
         viewModel.resultsLiveData.observe(this) { response ->
             when (response) {
@@ -85,9 +69,7 @@ class MainActivity : AppCompatActivity() {
                 is BaseRes.Success -> {
                     hideProgressBar()
                     response.data?.let { successRes ->
-                        searchedImageList.addAll((successRes as SearchImageRes).hits)
-                        val newList = ArrayList<Hit>(searchedImageList)
-                        searchImageAdapter.submitList(newList)
+                        searchImageAdapter.submitList(successRes as ArrayList<Hit>)
                     }
                 }
                 is BaseRes.Error -> {
@@ -105,11 +87,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setAPIParamForPageOne() {
-        viewModel.nextPageNo = 0
-        searchedImageList.clear()
-    }
-
     private fun showProgressBar() {
         binding.progressBar.visibility = View.VISIBLE
     }
@@ -124,5 +101,33 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    internal class DebouncingQueryTextListener(
+        lifecycle: Lifecycle,
+        private val onDebouncingQueryTextChange: (String?) -> Unit
+    ) : TextWatcher {
+
+        private var searchJob: Job? = null
+        private val coroutineScope = lifecycle.coroutineScope
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            //
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            //
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            val newText = s.toString()
+            searchJob?.cancel()
+            searchJob = coroutineScope.launch {
+                newText.let {
+                    delay(SEVEN_HUNDRED)
+                    onDebouncingQueryTextChange(newText)
+                }
+            }
+        }
     }
 }
